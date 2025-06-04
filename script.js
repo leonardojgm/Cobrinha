@@ -15,6 +15,7 @@ function iniciarJogo() {
     }
 
     aleatorizarComida();
+    capturaComandosTeclado();
 }
 
 function criarFundo() {
@@ -107,12 +108,28 @@ function atualizarDirecao(event) {
     }
 }
 
-function repeticaoJogo() {
+function definirNaoColisaoCobraCaixa() {
     if (cobra[0].x > (caixa/2 - 1) * caixa && direcao == "direita") cobra[0].x = 0;
     if (cobra[0].x < 0 && direcao == "esquerda") cobra[0].x = (caixa/2) * caixa;
     if (cobra[0].y < 0 && direcao == "cima") cobra[0].y = (caixa/2) * caixa;
     if (cobra[0].y > (caixa/2 - 1) * caixa && direcao == "baixo") cobra[0].y = 0;
+}
 
+function verificarColisao() {
+    for(i = 1; i < cobra.length; i++) {
+        if (cobra[0].x == cobra[i].x && cobra[0].y == cobra[i].y) {
+            clearInterval(jogo);
+            alert("Você perdeu! :(");
+
+            return true;
+        }
+    }
+}
+
+function repeticaoJogo() {
+    if (verificarColisao()) return;
+
+    definirNaoColisaoCobraCaixa();
     criarFundo();
     criarCobra();
     criarComida();
@@ -120,6 +137,5 @@ function repeticaoJogo() {
 }
 
 iniciarJogo();
-capturaComandosTeclado();
 
 let jogo = setInterval(repeticaoJogo, 100);
