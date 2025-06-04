@@ -1,46 +1,100 @@
-let canvas = document.getElementById("snake");
-let context = canvas.getContext("2d");
-let box = 32;
-let snake = [];
-let direction = "right";
+let tela = document.getElementById("tela");
+let contexto = tela.getContext("2d");
+let caixa = 32;
+let cobrinha = [];
+let direcao = "direita";
+let corFundo = "lightgreen";
+let corCobrinha = "green";
 
-snake[0] = {
-    x: 8 * box,
-    y: 8 * box
+function iniciarJogo() {
+    cobrinha[0] = {
+        x: (caixa/4) * caixa,
+        y: (caixa/4) * caixa
+    }
 }
 
-function criarBG() {
-    context.fillStyle = "lightgreen";
-    context.fillRect(0, 0, 16 * box, 16 * box);
+function criarFundo() {
+    contexto.fillStyle = corFundo;
+    contexto.fillRect(0, 0, (caixa/2) * caixa, (caixa/2) * caixa);
 }
 
 function criarCobrinha() {
-    for(i = 0; i < snake.length; i++) {
-        context.fillStyle = "green";
-        context.fillRect(snake[i].x, snake[i].y, box, box);
+    for(i = 0; i < cobrinha.length; i++) {
+        contexto.fillStyle = corCobrinha;
+        contexto.fillRect(cobrinha[i].x, cobrinha[i].y, caixa, caixa);
     }
 }
 
-function iniciarJogo() {
-    criarBG();
+function definirMovimentoCobrinha() {
+    let cobrinhaX = cobrinha[0].x;
+    let cobrinhaY = cobrinha[0].y;
+
+    switch(direcao) {
+        case "direita":
+            cobrinhaX += caixa;
+            break;
+        case "esquerda":
+            cobrinhaX -= caixa;
+            break;
+        case "cima":
+            cobrinhaY -= caixa;
+            break;
+        case "baixo":
+            cobrinhaY += caixa;
+            break;
+    }
+
+    cobrinha.pop();
+
+    let novaCabeca = {
+        x: cobrinhaX,
+        y: cobrinhaY
+    }
+
+    cobrinha.unshift(novaCabeca);
+}
+
+function capturaComandosTeclado() {
+    document.addEventListener("keydown", atualizarDirecao);
+}
+
+function atualizarDirecao(event) {
+    switch(event.keyCode) {
+        case 39:
+        case 68:
+            if (direcao == "esquerda") return;
+            direcao = "direita";
+            break;
+        case 37:
+        case 65:
+            if (direcao == "direita") return;
+            direcao = "esquerda";
+            break;
+        case 38:
+        case 87:
+            if (direcao == "baixo") return;
+            direcao = "cima";
+            break;
+        case 40:
+        case 83:
+            if (direcao == "cima") return;
+            direcao = "baixo";
+            break;
+    }
+}
+
+function repeticaoJogo() {
+    if (cobrinha[0].x > (caixa/2 - 1) * caixa && direcao == "direita") cobrinha[0].x = 0;
+    if (cobrinha[0].x < 0 && direcao == "esquerda") cobrinha[0].x = (caixa/2) * caixa;
+    if (cobrinha[0].y > (caixa/2 - 1) * caixa && direcao == "cima") cobrinha[0].y = 0;
+    if (cobrinha[0].y < 0 && direcao == "baixo") cobrinha[0].y = (caixa/2) * caixa;
+
+    criarFundo();
     criarCobrinha();
-
-    let snakeX = snake[0].x;
-    let snakeY = snake[0].y;
-
-    if(direction == "right") snakeX += box;
-    if(direction == "left") snakeX -= box;
-    if(direction == "up") snakeY -= box;
-    if(direction == "down") snakeY += box;
-
-    snake.pop();
-
-    let newHead = {
-        x: snakeX,
-        y: snakeY
-    }
-
-    snake.unshift(newHead);
+    definirMovimentoCobrinha();
 }
 
-let jogo = setInterval(iniciarJogo, 100);
+iniciarJogo();
+capturaComandosTeclado();
+
+let jogo = setInterval(repeticaoJogo, 100);
