@@ -1,15 +1,22 @@
 let tela = document.getElementById("tela");
 let contexto = tela.getContext("2d");
 let caixa = 32;
-let cobrinha = [];
+let cobra = [];
+let comidas = [];
 let direcao = "direita";
 let corFundo = "lightgreen";
-let corCobrinha = "green";
+let corCobra = "green";
+let corComida = "red";
 
 function iniciarJogo() {
-    cobrinha[0] = {
+    cobra[0] = {
         x: (caixa/4) * caixa,
         y: (caixa/4) * caixa
+    }
+
+    comidas[0] = {
+        x: Math.floor(Math.random() * (caixa/2)) * caixa,
+        y: Math.floor(Math.random() * (caixa/2)) * caixa
     }
 }
 
@@ -19,15 +26,22 @@ function criarFundo() {
 }
 
 function criarCobrinha() {
-    for(i = 0; i < cobrinha.length; i++) {
-        contexto.fillStyle = corCobrinha;
-        contexto.fillRect(cobrinha[i].x, cobrinha[i].y, caixa, caixa);
+    for(i = 0; i < cobra.length; i++) {
+        contexto.fillStyle = corCobra;
+        contexto.fillRect(cobra[i].x, cobra[i].y, caixa, caixa);
+    }
+}
+
+function criarComida() {
+    for(i = 0; i < comidas.length; i++) {
+        contexto.fillStyle = corComida;
+        contexto.fillRect(comidas[i].x, comidas[i].y, caixa, caixa);
     }
 }
 
 function definirMovimentoCobrinha() {
-    let cobrinhaX = cobrinha[0].x;
-    let cobrinhaY = cobrinha[0].y;
+    let cobrinhaX = cobra[0].x;
+    let cobrinhaY = cobra[0].y;
 
     switch(direcao) {
         case "direita":
@@ -44,14 +58,14 @@ function definirMovimentoCobrinha() {
             break;
     }
 
-    cobrinha.pop();
+    cobra.pop();
 
     let novaCabeca = {
         x: cobrinhaX,
         y: cobrinhaY
     }
 
-    cobrinha.unshift(novaCabeca);
+    cobra.unshift(novaCabeca);
 }
 
 function capturaComandosTeclado() {
@@ -84,13 +98,14 @@ function atualizarDirecao(event) {
 }
 
 function repeticaoJogo() {
-    if (cobrinha[0].x > (caixa/2 - 1) * caixa && direcao == "direita") cobrinha[0].x = 0;
-    if (cobrinha[0].x < 0 && direcao == "esquerda") cobrinha[0].x = (caixa/2) * caixa;
-    if (cobrinha[0].y > (caixa/2 - 1) * caixa && direcao == "cima") cobrinha[0].y = 0;
-    if (cobrinha[0].y < 0 && direcao == "baixo") cobrinha[0].y = (caixa/2) * caixa;
+    if (cobra[0].x > (caixa/2 - 1) * caixa && direcao == "direita") cobra[0].x = 0;
+    if (cobra[0].x < 0 && direcao == "esquerda") cobra[0].x = (caixa/2) * caixa;
+    if (cobra[0].y > (caixa/2 - 1) * caixa && direcao == "cima") cobra[0].y = 0;
+    if (cobra[0].y < 0 && direcao == "baixo") cobra[0].y = (caixa/2) * caixa;
 
     criarFundo();
     criarCobrinha();
+    criarComida();
     definirMovimentoCobrinha();
 }
 
