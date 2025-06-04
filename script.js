@@ -14,10 +14,7 @@ function iniciarJogo() {
         y: (caixa/4) * caixa
     }
 
-    comidas[0] = {
-        x: Math.floor(Math.random() * (caixa/2)) * caixa,
-        y: Math.floor(Math.random() * (caixa/2)) * caixa
-    }
+    aleatorizarComida();
 }
 
 function criarFundo() {
@@ -25,10 +22,17 @@ function criarFundo() {
     contexto.fillRect(0, 0, (caixa/2) * caixa, (caixa/2) * caixa);
 }
 
-function criarCobrinha() {
+function criarCobra() {
     for(i = 0; i < cobra.length; i++) {
         contexto.fillStyle = corCobra;
         contexto.fillRect(cobra[i].x, cobra[i].y, caixa, caixa);
+    }
+}
+
+function aleatorizarComida() {
+    comidas[0] = {
+        x: Math.floor(Math.random() * (caixa/2)) * caixa,
+        y: Math.floor(Math.random() * (caixa/2)) * caixa
     }
 }
 
@@ -39,30 +43,36 @@ function criarComida() {
     }
 }
 
-function definirMovimentoCobrinha() {
-    let cobrinhaX = cobra[0].x;
-    let cobrinhaY = cobra[0].y;
+function definirMovimentoCobra() {
+    let cobraX = cobra[0].x;
+    let cobraY = cobra[0].y;
 
     switch(direcao) {
         case "direita":
-            cobrinhaX += caixa;
+            cobraX += caixa;
             break;
         case "esquerda":
-            cobrinhaX -= caixa;
+            cobraX -= caixa;
             break;
         case "cima":
-            cobrinhaY -= caixa;
+            cobraY -= caixa;
             break;
         case "baixo":
-            cobrinhaY += caixa;
+            cobraY += caixa;
             break;
     }
 
-    cobra.pop();
+    if (cobraX != comidas[0].x || cobraY != comidas[0].y) {
+        cobra.pop();
+    } else {
+        comidas.pop();
+        
+        aleatorizarComida();
+    }
 
     let novaCabeca = {
-        x: cobrinhaX,
-        y: cobrinhaY
+        x: cobraX,
+        y: cobraY
     }
 
     cobra.unshift(novaCabeca);
@@ -100,13 +110,13 @@ function atualizarDirecao(event) {
 function repeticaoJogo() {
     if (cobra[0].x > (caixa/2 - 1) * caixa && direcao == "direita") cobra[0].x = 0;
     if (cobra[0].x < 0 && direcao == "esquerda") cobra[0].x = (caixa/2) * caixa;
-    if (cobra[0].y > (caixa/2 - 1) * caixa && direcao == "cima") cobra[0].y = 0;
-    if (cobra[0].y < 0 && direcao == "baixo") cobra[0].y = (caixa/2) * caixa;
+    if (cobra[0].y < 0 && direcao == "cima") cobra[0].y = (caixa/2) * caixa;
+    if (cobra[0].y > (caixa/2 - 1) * caixa && direcao == "baixo") cobra[0].y = 0;
 
     criarFundo();
-    criarCobrinha();
+    criarCobra();
     criarComida();
-    definirMovimentoCobrinha();
+    definirMovimentoCobra();
 }
 
 iniciarJogo();
