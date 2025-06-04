@@ -7,6 +7,7 @@ let direcao = "direita";
 let corFundo = "lightgreen";
 let corCobra = "green";
 let corComida = "red";
+let pontos = 0;
 
 function iniciarJogo() {
     cobra[0] = {
@@ -44,6 +45,11 @@ function criarComida() {
     }
 }
 
+function definirPonto() {
+    pontos += 1;
+    document.getElementById("pontos").innerHTML = pontos;
+}
+
 function definirMovimentoCobra() {
     let cobraX = cobra[0].x;
     let cobraY = cobra[0].y;
@@ -67,7 +73,8 @@ function definirMovimentoCobra() {
         cobra.pop();
     } else {
         comidas.pop();
-        
+
+        definirPonto();
         aleatorizarComida();
     }
 
@@ -81,38 +88,64 @@ function definirMovimentoCobra() {
 
 function capturaComandosTeclado() {
     document.addEventListener("keydown", atualizarDirecao);
+
+    document.getElementById("btn-cima").addEventListener("click", () => {
+        if (direcao !== "baixo" && verificarPodeMudarDirecao("cima")) direcao = "cima";
+    });
+    document.getElementById("btn-baixo").addEventListener("click", () => {
+        if (direcao !== "cima" && verificarPodeMudarDirecao("baixo")) direcao = "baixo";
+    });
+    document.getElementById("btn-esquerda").addEventListener("click", () => {
+        if (direcao !== "direita" && verificarPodeMudarDirecao("esquerda")) direcao = "esquerda";
+    });
+    document.getElementById("btn-direita").addEventListener("click", () => {
+        if (direcao !== "esquerda" && verificarPodeMudarDirecao("direita")) direcao = "direita";
+    });
+}
+
+function verificarPodeMudarDirecao(novaDirecao) {
+    let foraX = cobra[0].x < 0 || cobra[0].x >= caixa * (caixa/2);
+    let foraY = cobra[0].y < 0 || cobra[0].y >= caixa * (caixa/2);
+
+    if ((foraX && (novaDirecao === "cima" || novaDirecao === "baixo")) ||
+        (foraY && (novaDirecao === "esquerda" || novaDirecao === "direita"))) {
+        return false;
+    }
+
+    return true;
 }
 
 function atualizarDirecao(event) {
     switch(event.keyCode) {
         case 39:
         case 68:
-            if (direcao == "esquerda") return;
+            if (direcao == "esquerda" && verificarPodeMudarDirecao("direita")) return;
             direcao = "direita";
             break;
         case 37:
         case 65:
-            if (direcao == "direita") return;
+            if (direcao == "direita" && verificarPodeMudarDirecao("esquerda")) return;
             direcao = "esquerda";
             break;
         case 38:
         case 87:
-            if (direcao == "baixo") return;
+            if (direcao == "baixo" && verificarPodeMudarDirecao("cima")) return;
             direcao = "cima";
             break;
         case 40:
         case 83:
-            if (direcao == "cima") return;
+            if (direcao == "cima" && verificarPodeMudarDirecao("baixo")) return;
             direcao = "baixo";
             break;
     }
 }
 
 function definirNaoColisaoCobraCaixa() {
-    if (cobra[0].x > (caixa/2 - 1) * caixa && direcao == "direita") cobra[0].x = 0;
-    if (cobra[0].x < 0 && direcao == "esquerda") cobra[0].x = (caixa/2) * caixa;
-    if (cobra[0].y < 0 && direcao == "cima") cobra[0].y = (caixa/2) * caixa;
-    if (cobra[0].y > (caixa/2 - 1) * caixa && direcao == "baixo") cobra[0].y = 0;
+    if (cobra[0].x > (caixa/2 - 1) * caixa) cobra[0].x = 0;
+    else if (cobra[0].x < 0) cobra[0].x = (caixa/2) * caixa;
+
+    if (cobra[0].y > (caixa/2 - 1) * caixa) cobra[0].y = 0;
+    else if (cobra[0].y < 0) cobra[0].y = (caixa/2) * caixa;
 }
 
 function verificarColisao() {
@@ -120,6 +153,7 @@ function verificarColisao() {
         if (cobra[0].x == cobra[i].x && cobra[0].y == cobra[i].y) {
             clearInterval(jogo);
             alert("Você perdeu! :(");
+            document.location.reload();
 
             return true;
         }
@@ -129,11 +163,11 @@ function verificarColisao() {
 function repeticaoJogo() {
     if (verificarColisao()) return;
 
+    definirMovimentoCobra();
     definirNaoColisaoCobraCaixa();
     criarFundo();
     criarCobra();
     criarComida();
-    definirMovimentoCobra();
 }
 
 iniciarJogo();
